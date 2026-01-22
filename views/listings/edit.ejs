@@ -1,0 +1,83 @@
+<% layout("/layouts/boilerplate") %>
+<br />
+<div class="row">
+  <div class="col-8 offset-2">
+    <h3 class="text-center fs-2">Edit a listing</h3>
+    <br />
+    <form method="POST" action="/listings/<%= userListing._id %>?_method=PUT">
+      <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input
+          type="text"
+          name="title"
+          placeholder="enter title"
+          value="<%=userListing.title %>"
+          required
+          class="form-control shadow-none"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea
+          name="description"
+          placeholder="enter description"
+          class="form-control shadow-none"
+        >
+       <%=userListing.description %> </textarea
+        >
+      </div>
+
+      <div class="mb-3">
+        <label for="image" class="form-label">image Link</label>
+        <input
+          type="text"
+          name="image"
+          placeholder="enter image URL/Link"
+          value="<%=userListing.image %>"
+          class="form-control shadow-none"
+        />
+      </div>
+      <div class="row">
+        <div class="mb-3 col-md-4">
+          <label for="price" class="form-label">Price</label>
+          <input
+            type="number"
+            name="price"
+            placeholder="enter price"
+            value="<%=userListing.price %>"
+            required
+            class="form-control shadow-none"
+          />
+        </div>
+        <div class="mb-3 col-md-8">
+          <label for="country" class="form-label">Country</label>
+          <input
+            type="text"
+            name="country"
+            placeholder="enter country"
+            value="<%=userListing.country %>"
+            required
+            class="form-control shadow-none"
+          />
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input
+          type="text"
+          name="location"
+          placeholder="enter location"
+          value="<%=userListing.location %>"
+          required
+          class="form-control shadow-none"
+        />
+      </div>
+
+      <button class="btn bg-secondary text-white fs-56 mb-2 px-5 shadow-none">
+        Edit
+      </button>
+    </form>
+  </div>
+</div>
