@@ -90,3 +90,18 @@ body {
       padding-left: 0;
       padding-right: 0;
 }
+
+/* edit Review cards */
+#all-card{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-right: 10px;
+}
+.review-card{
+  padding: 8px;
+  width: 13.8rem;
+  border: 1px solid rgba(72, 72, 72, 0.605) !important;
+  border-radius: 8px;
+}

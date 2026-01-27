@@ -4,7 +4,14 @@
   <div class="col-8 offset-2">
     <h3 class="text-center fs-2">Edit a listing</h3>
     <br />
-    <form method="POST" action="/listings/<%= userListing._id %>?_method=PUT">
+    <!-- yaha ?_method=PUT iss liye likhe h ejs bs get post support krta h is liye hm method-override package use kr rhe h  -->
+    <form
+      method="POST"
+      action="/listings/<%= userListing._id %>?_method=PUT"  
+      novalidate
+      class="needs-validation"
+      
+    >
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input
@@ -15,6 +22,7 @@
           required
           class="form-control shadow-none"
         />
+        <div class="invalid-feedback">Title should be valid</div>
       </div>
 
       <div class="mb-3">
@@ -23,9 +31,11 @@
           name="description"
           placeholder="enter description"
           class="form-control shadow-none"
+          required
         >
        <%=userListing.description %> </textarea
         >
+        <div class="invalid-feedback">Enter short description</div>
       </div>
 
       <div class="mb-3">
@@ -36,7 +46,9 @@
           placeholder="enter image URL/Link"
           value="<%=userListing.image %>"
           class="form-control shadow-none"
+          required
         />
+        <div class="invalid-feedback">Image should vi valid</div>
       </div>
       <div class="row">
         <div class="mb-3 col-md-4">
@@ -49,6 +61,7 @@
             required
             class="form-control shadow-none"
           />
+          <div class="invalid-feedback">Price should be valid</div>
         </div>
         <div class="mb-3 col-md-8">
           <label for="country" class="form-label">Country</label>
@@ -60,6 +73,7 @@
             required
             class="form-control shadow-none"
           />
+          <div class="invalid-feedback">Country should be valid</div>
         </div>
       </div>
 
@@ -73,6 +87,7 @@
           required
           class="form-control shadow-none"
         />
+        <div class="invalid-feedback">Location should be valid</div>
       </div>
 
       <button class="btn bg-secondary text-white fs-56 mb-2 px-5 shadow-none">
