@@ -1,110 +1,48 @@
 import express from "express";
-import listingModel from "../models/listing.model.js";
 import wrapAsync from "../utils/wrapAsync.js";
-// import reviewModel from "./models/review.model.js";
+import { validateListing } from "../utils/validation.js";
+import isLogedIn, { isOwner } from "../middlewares/isLogedIn.js";
+// import multer from "multer";
+import upload from "../middlewares/multer.js";
+
+import {
+  createNewListing,
+  deleteListing,
+  editListingForm,
+  newListingForm,
+  showAllListings,
+  showListingDetails,
+  updateListing,
+} from "../controllers/listings.ctrl.js";
 
 const router = express.Router();
 
-// Root route (Home page)
-router.get("/", (req, res) => {
-  res.redirect("/listings");
-});
-
 // index route to show all listings
-router.get("/", async (req, res) => {
-  try {
-    const allListings = await listingModel.find({});
-    // console.log(allListings)
-    res.render("listings/index", { allListings });
-    // console.log(allListings)
-  } catch (error) {
-    console.log("Error :", error.message);
-    res.status(500).send("Server Error");
-  }
-});
+router.get("/", showAllListings);
 
 // new listing form route
-router.get("/new", (req, res) => {
-  try {
-    res.render("listings/new.ejs");
-  } catch (error) {
-    res.status(500).send("Server Error", error.message);
-  }
-});
+router.get("/new", isLogedIn, newListingForm);
 
 // show route to show single listing details
-router.get("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const listing = await listingModel.findById(id).populate("reviews");
-    res.render("listings/show.ejs", { listing });
-  } catch (error) {
-    res.status(500).send("Server Error");
-  }
-});
+router.get("/:id", showListingDetails);
 
 // create route to add new
+// const upload = multer({ dest: 'uploads/' })
 router.post(
   "/",
-  wrapAsync(async (req, res, next) => {
-    // we use wrapAsync that's why i can't use try and catch
-    const { title, description, image, price, location, country } = req.body;
-    const newListing = new listingModel({
-      title,
-      description,
-      image,
-      price,
-      location,
-      country,
-    });
-    await newListing.save();
-    res.redirect("/listings");
-  }),
+  isLogedIn,
+  validateListing,
+  upload.single("image"),
+  wrapAsync(createNewListing)
 );
 
 // edit show  routes one by one
 
-router.get("/:id/edit", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const userListing = await listingModel.findById(id);
-    res.render("listings/edit.ejs", { userListing });
-  } catch (error) {
-    res.status(500).send("Server Error");
-  }
-});
+router.get("/:id/edit", isLogedIn, isOwner, editListingForm);
 // update route
-router.put("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { title, description, image, price, location, country } = req.body;
-    await listingModel.findByIdAndUpdate(
-      id,
-      {
-        title,
-        description,
-        image,
-        price,
-        location,
-        country,
-      },
-      { new: true },
-    );
-    res.redirect(`/listings/${id}`);
-  } catch (error) {
-    res.status(500).send("Server Error");
-  }
-});
+router.put("/:id", isLogedIn, isOwner, validateListing, upload.single("image"), updateListing);
 
 // delete route
-router.delete("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    await listingModel.findByIdAndDelete(id);
-    res.redirect("/listings");
-  } catch (error) {
-    res.status(500).send("Server Error");
-  }
-});
+router.delete("/:id", isLogedIn, isOwner, deleteListing);
 
 export default router;

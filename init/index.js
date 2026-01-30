@@ -1,12 +1,10 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-dotenv.config({path:"../.env"});
+dotenv.config({ path: "../.env" });
 import initData from "./data.js";
 import listingModel from "../models/listing.model.js";
 
 // const MONGO_URI = "mongodb://127.0.0.1:27017/wanderlust";
-
-
 
 const connectDB = async () => {
   try {
@@ -19,13 +17,16 @@ const connectDB = async () => {
 connectDB();
 
 const initDB = async () => {
-      try{
-  await listingModel.deleteMany({});
-  await listingModel.insertMany(initData.data);
-  console.log("data was initialized");
-      }catch(error){
-        console.log("data initialization failed", error.message);
-      }
+  try {
+    await listingModel.deleteMany({});
+    initData.data = initData.data.map((obj) => {
+      return { ...obj, owner: "6979e22a8f56bd08b2c31513" };
+    });
+    await listingModel.insertMany(initData.data);
+    console.log("data was initialized");
+  } catch (error) {
+    console.log("data initialization failed", error.message);
+  }
 };
 
 initDB();

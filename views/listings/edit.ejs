@@ -7,10 +7,10 @@
     <!-- yaha ?_method=PUT iss liye likhe h ejs bs get post support krta h is liye hm method-override package use kr rhe h  -->
     <form
       method="POST"
-      action="/listings/<%= userListing._id %>?_method=PUT"  
+      action="/listings/<%= userListing._id %>?_method=PUT"
       novalidate
       class="needs-validation"
-      
+      enctype="multipart/form-data"
     >
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
@@ -39,16 +39,28 @@
       </div>
 
       <div class="mb-3">
-        <label for="image" class="form-label">image Link</label>
+        <label for="image" class="form-label">Existing Listing Image</label>
+        <div class="mb-2">
+          <img
+            src="<%= userListing.image.url %>"
+            alt="current listing"
+            style="width: 100px;  height: 100px; border-radius: 8px; "
+            class="img-thumbnail"
+          />
+        </div>
+
+        <label for="image" class="form-label"
+          >Upload New Image (Optional)</label
+        >
         <input
-          type="text"
+          type="file"
           name="image"
-          placeholder="enter image URL/Link"
-          value="<%=userListing.image %>"
+          id="image"
           class="form-control shadow-none"
-          required
         />
-        <div class="invalid-feedback">Image should vi valid</div>
+        <div class="form-text">
+          Leave blank if you don't want to change the image.
+        </div>
       </div>
       <div class="row">
         <div class="mb-3 col-md-4">
