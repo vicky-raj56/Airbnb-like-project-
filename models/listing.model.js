@@ -28,7 +28,21 @@ const listingSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+
+  geometry:{
+  type: {
+    type: String, // GeoJSON type
+    enum: ['Point'], // 'Point' is the only allowed type
+    required: true
+  },
+  coordinates: {
+    type: [Number], // Array of numbers: [longitude, latitude]
+    required: true
+  }
+}
+
 });
+
 
 listingSchema.post("findOneAndDelete", async (listing) => {
   // console.log(listing)

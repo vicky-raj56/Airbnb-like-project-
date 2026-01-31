@@ -1,5 +1,5 @@
 
-
+import userModel from "../models/user.model.js";
 
 // post route for signup
 const createUser = async (req, res, next) => {
@@ -7,6 +7,7 @@ const createUser = async (req, res, next) => {
       const { username, email, password } = req.body;
       const newUser = new userModel({ username, email });
       const registeredUser = await userModel.register(newUser, password);
+      // console.log(registeredUser);
       req.login(registeredUser, (err) => {
         if (err) {
           return next(err);

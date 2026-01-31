@@ -1,6 +1,14 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import listingModel from "../models/listing.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+// import mbxClient from '@mapbox/mapbox-sdk'
+import mbxGeocding from "@mapbox/mapbox-sdk/services/geocoding.js";
+const mapToken = process.env.MAPBOX_TOKEN;
+
+const geoCodingClient = mbxGeocding({ accessToken: mapToken });
 
 // index route to show all listings
 const showAllListings = async (req, res) => {
@@ -54,6 +62,15 @@ const showListingDetails = async (req, res) => {
 const createNewListing = async (req, res, next) => {
   // we use wrapAsync that's why i can't use try and catch
   try {
+    let reponse = await geoCodingClient
+      .forwardGeocode({
+        query: req.body.location,
+        limit: 1,
+      })
+      .send();
+
+
+
     const { title, description, price, location, country } = req.body;
     const newListing = new listingModel({
       title,
@@ -62,13 +79,14 @@ const createNewListing = async (req, res, next) => {
       location,
       country,
     });
+    newListing.geometry = reponse.body.features[0].geometry;
 
     if (!req.file) {
       req.flash("error", "Image is required!");
       return res.redirect("/listings/new");
     }
     const imagePath = req.file.path;
-    console.log(imagePath);
+    // console.log(imagePath);
     const imageUplaod = await cloudinary.uploader.upload(imagePath, {
       folder: "Wanderlust/Listings",
       quality: "auto",
@@ -86,7 +104,8 @@ const createNewListing = async (req, res, next) => {
 
     newListing.owner = req.user._id;
     req.flash("success", "New Listing created!");
-    await newListing.save();
+    const savedListing = await newListing.save();
+    // console.log("savedListing",savedListing)
     res.redirect("/listings");
   } catch (error) {
     console.log("errorCloudUpload", { error: error.message });
@@ -105,7 +124,11 @@ const editListingForm = async (req, res) => {
 
       return res.redirect("/listings");
     }
-    res.render("listings/edit.ejs", { userListing });
+    const originaImage = userListing.image.url.replace(
+      "/upload/",
+      "/upload/w_200/blur:2000/",
+    ); // ye image ko blur kr diyr width 200px kri di ye cloudinary ki transformation hai
+        res.render("listings/edit.ejs", { userListing, originaImage });
   } catch (error) {
     res.status(500).send("Server Error");
   }

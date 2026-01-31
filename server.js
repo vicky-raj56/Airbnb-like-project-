@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
+import cors from "cors";
 import connectDB from "./db/db.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -8,6 +9,7 @@ import methodOverride from "method-override";
 import ejsMate from "ejs-mate";
 // import ExpressError from "./utils/expressError.js";
 import session from "express-session";
+import mongoStore from "connect-mongo";
 import flash from "connect-flash";
 import listingsRouter from "./routes/listings.route.js";
 import reviewsRouter from "./routes/reviews.router.js";
@@ -27,6 +29,7 @@ connectDB();
 connectCloudinary();
 
 // middleware to parse JSON request bodies
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // to parse form data
 app.use(methodOverride("_method"));
@@ -39,8 +42,21 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
+const store = mongoStore.create({
+  mongoUrl: process.env.MONGO_URI,
+  crypto:{
+    secret:process.env.SESSION_SECRET
+  },
+  touchAfter:24*60*60 // time period in seconds
+});
+
+store.on("error",function(e){
+  console.log("Session Store Error",e);
+});
+
 const sessionOptions = {
-  secret: "mySuperSecretCode",
+  store: store,
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -54,6 +70,8 @@ const sessionOptions = {
 app.get("/", (req, res) => {
   res.redirect("/listings");
 });
+
+
 
 app.use(session(sessionOptions));
 app.use(flash());
